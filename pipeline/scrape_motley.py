@@ -22,7 +22,6 @@ def fetch_transcript(url):
 
     for p in paragraphs:
         line = p.get_text().strip()
-        print(line)
         if line:
             text.append(line)
     
