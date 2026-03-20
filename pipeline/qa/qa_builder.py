@@ -1,7 +1,3 @@
-import scrape_motley
-import preprocess
-import json
-
 def build_qa_pairs(data):
     qa_pairs = []
     current_question = None
@@ -55,15 +51,4 @@ def build_qa_pairs(data):
 
     return qa_pairs
 
-if __name__ == "__main__":
-    url = "https://www.fool.com/earnings/call-transcripts/2026/01/29/apple-aapl-q1-2026-earnings-call-transcript/"
-    transcript = scrape_motley.fetch_transcript(url)
-    exec_names = scrape_motley.fetch_exec_names(url)
 
-    structured = preprocess.structure_transcript(transcript)
-
-    section_labeled = preprocess.label_transcript_sections(structured, exec_names)
-
-    qa_pairs = build_qa_pairs(section_labeled)
-
-    print(json.dumps(qa_pairs, indent=2))

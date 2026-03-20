@@ -66,12 +66,3 @@ def fetch_transcript(url):
     
     return text
 
-if __name__ == "__main__":
-    url = "https://www.fool.com/earnings/call-transcripts/2026/01/29/apple-aapl-q1-2026-earnings-call-transcript/"
-    transcript = fetch_exec_names(url)
-
-    print(transcript)
-
-    # with open("data/raw/sample.txt", "w", encoding="utf-8") as f:
-    #     for line in transcript:
-    #         f.write(line + "\n")
