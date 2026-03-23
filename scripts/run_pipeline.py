@@ -2,6 +2,7 @@ from pipeline.scraping.scrape_motley import fetch_transcript, fetch_exec_names
 from pipeline.preprocessing.structure import structure_transcript
 from pipeline.preprocessing.section import label_transcript_sections
 from pipeline.qa.qa_builder import build_qa_pairs
+from pipeline.sentiment.sentiment_pipeline import add_sentiment_to_qa
 import json
 
 def main():
@@ -15,7 +16,9 @@ def main():
 
     qa_pairs = build_qa_pairs(section_labeled)
 
-    print(json.dumps(qa_pairs, indent=2))
+    qa_with_sentiment = add_sentiment_to_qa(qa_pairs)
+
+    print(json.dumps(qa_with_sentiment, indent=2))
 
 if __name__ == "__main__":
     main()
