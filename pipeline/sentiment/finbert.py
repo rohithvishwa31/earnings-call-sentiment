@@ -1,10 +1,14 @@
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import spacy
 import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 MODEL_NAME = "ProsusAI/finbert"
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+
+nlp = spacy.load("en_core_web_sm")
+nlp.add_pipe("sentencizer")
 
 
 def get_sentiment(text):
@@ -22,24 +26,6 @@ def get_sentiment(text):
         "confidence": float(torch.max(probs))
     }
 
-def split_text(text, max_words=200):
-    words = text.split()
-    return [" ".join(words[i:i+max_words]) for i in range(0, len(words), max_words)]
-
-def aggregate_sentiment(results):
-    score_map = {"positive": 1, "neutral": 0, "negative": -1}
-
-    total = 0
-    for r in results:
-        total += score_map[r["label"]] * r["confidence"]
-
-    avg = total / len(results)
-
-    if avg > 0.2:
-        label = "positive"
-    elif avg < -0.2:
-        label = "negative"
-    else:
-        label = "neutral"
-
-    return {"label": label, "score": round(avg, 4)}
+def split_into_sentences(text):
+    doc = nlp(text)
+    return [sent.text.strip() for sent in doc.sents]
