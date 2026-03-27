@@ -3,6 +3,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 MODEL_NAME = "ProsusAI/finbert"
+#MODEL_NAME = "D:/projects/Earnings-call-sentiment/earnings-call-sentiment/training/finbert-tuned-final"
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
@@ -19,12 +20,11 @@ def get_sentiment(text):
 
     probs = torch.nn.functional.softmax(outputs.logits, dim=1)[0]
 
-    labels = ["negative", "neutral", "positive"]
+    labels = ["positive", "negative", "neutral"]
 
-    return {
-        "label": labels[torch.argmax(probs)],
-        "confidence": float(torch.max(probs))
-    }
+    prob_dict = {label: float(probs[i]) for i, label in enumerate(labels)}
+
+    return prob_dict
 
 def split_into_sentences(text):
     doc = nlp(text)
