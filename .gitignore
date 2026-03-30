@@ -10,6 +10,11 @@ venv/
 # Data files (optional)
 data/raw/
 data/processed/
+data/FinancialPhraseBank-v1.0
+data/eval_dataset.json
+
+#scripts
+scripts/evaluate.py
 
 # OS files
 .DS_Store
@@ -17,3 +22,6 @@ Thumbs.db
 
 # VS Code
 .vscode/
+
+#training
+training
