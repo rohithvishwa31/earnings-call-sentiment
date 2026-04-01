@@ -89,7 +89,7 @@ def add_sentiment_to_qa(qa_pairs):
 
     return enriched
 
-def chunk_text(text, chunk_size=2, stride=2):
+def chunk_text(text, chunk_size=2, stride=3):
     sentences = split_into_sentences(text)
 
     if len(sentences) <= chunk_size:
@@ -124,19 +124,21 @@ def analyze_with_rag(answer):
 
     candidates = [c for c in candidates if is_valid(c)]
 
-    scored = [
-        (chunk, score_chunk_alignment(chunk, sentiment["label"]))
-        for chunk in candidates
-    ]
+    if not candidates:
+        sentiment["evidence"] = []
+        return sentiment
 
+    embedder = retriever.index.embedder
+
+    query_vec = embedder.encode([query])[0]
+    chunk_vecs = embedder.encode(candidates)
+
+    similarities = chunk_vecs @ query_vec
+
+    scored = list(zip(candidates, similarities))
     scored.sort(key=lambda x: x[1], reverse=True)
 
-    filtered = [c for c, s in scored if s > 0.05]
-
-    if not filtered:
-        filtered = [c for c, _ in scored]
-
-    evidence = filtered[:3]
+    evidence = [c for c, _ in scored[:3]]
 
     sentiment["evidence"] = evidence
 
