@@ -1,232 +1,162 @@
-# 📊 Earnings Call Sentiment Analysis (FinBERT + RAG)
+# Explainable Financial Sentiment Engine [![Live Demo](https://img.shields.io/badge/Live-Demo-green)](https://earnings-call-sentiment.streamlit.app)
 
-## 🚀 Overview
-
-This project builds a **financial sentiment analysis pipeline** using earnings call transcripts (scraped from Motley Fool).
-It processes raw transcripts into structured data, separates **Prepared Remarks vs Q&A**, and enables **fine-grained sentiment analysis** using FinBERT.
-
-The system is designed with **RAG (Retrieval-Augmented Generation)** in mind, enabling intelligent querying over earnings calls.
+An end-to-end NLP system that analyzes earnings call transcripts and provides **interpretable sentiment insights** using FinBERT and a **Retrieval-Augmented Generation (RAG)** pipeline.
 
 ---
 
-## 🎯 Objectives
+## Key Features
 
-* Scrape earnings call transcripts
-* Structure raw text into speaker-level data
-* Identify **Prepared vs Q&A sections**
-* Classify **speaker types (executive, analyst, operator)**
-* Build **Analyst → Executive QA pairs**
-* Perform **financial sentiment analysis (FinBERT)**
-* Enable **RAG-based querying over transcripts**
-
----
-
-## 🏗️ Pipeline Architecture
-
-```text
-Raw Transcript (Motley Fool)
-        ↓
-Text Cleaning & Parsing
-        ↓
-Structured Format (speaker, text)
-        ↓
-Section Labeling (Prepared / QA)
-        ↓
-Speaker Classification (exec / analyst / operator)
-        ↓
-QA Pair Construction
-        ↓
-Sentiment Analysis (FinBERT)
-        ↓
-RAG Indexing (vector DB)
-```
+-  **Context-aware sentiment analysis** using FinBERT
+-  **RAG-based evidence retrieval** for explainability
+-  **Sentiment-aligned ranking** of supporting text
+-  **Drivers vs Risks extraction** for financial insights
+-  **Contextual heatmap visualization** (highlighted evidence)
+-  **Interactive Streamlit dashboard**
+-  **Batch processing** for large-scale transcript analysis
 
 ---
 
-## 📂 Project Structure
+## System Overview
+
+This system goes beyond basic sentiment classification by combining:
+
+1. **FinBERT-based sentiment scoring**
+2. **Context window aggregation**
+3. **Signal extraction (drivers & risks)**
+4. **FAISS-based semantic retrieval (RAG)**
+5. **Sentiment-aligned evidence ranking**
+
+ Output includes:
+- Sentiment label + score  
+- Key drivers and risks  
+- Supporting evidence (highlighted in text)
+
+---
+
+## Architecture
+Transcript / Q&A
+↓
+Sentence Splitting
+↓
+Context Window Analysis (FinBERT)
+↓
+Signal Extraction (Drivers / Risks)
+↓
+RAG Retrieval (FAISS + embeddings)
+↓
+Sentiment-Aligned Ranking
+↓
+Final Output (Score + Evidence + Visualization)
+
+
+---
+
+## Demo (Streamlit UI)
+
+### Features
+
+- **Sandbox Mode** → Test individual answers  
+- **Batch Mode** → Upload JSON and process full transcripts  
+- **Executive Scorecard** → Sentiment + confidence  
+- **Evidence Panel** → Top supporting chunks  
+- **Contextual Heatmap** → Highlighted positive/negative text  
+
+---
+
+## Screenshots
+
+![Homepage](assets/dashboard.png)
+![Scorecard](assets/scorecard.png)
+![Evidence](assets/evidence.png)
+![Contextual heatmap](assets/contextual_heatmap.png)
+
+---
+
+## Tech Stack
+
+- Python
+- PyTorch
+- Hugging Face Transformers
+- FAISS (vector search)
+- Sentence Transformers
+- Streamlit
+
+---
+
+## Installation
 
 ```bash
-.
-├── scrape_motley.py        # Scraping transcripts & participant names
-├── parser.py               # structure_transcript()
-├── section_labeler.py      # QA vs Prepared detection
-├── speaker_classifier.py   # speaker_type logic
-├── qa_builder.py           # QA pairing logic
-├── sentiment.py            # FinBERT integration (planned)
-├── rag_pipeline.py         # RAG system (planned)
-├── main.py                 # Entry point
-└── README.md
-```
-
----
-
-## 🧩 Data Format
-
-### 🔹 Structured Transcript
-
-```json
-{
-  "speaker": "Tim Cook",
-  "text": "We had a strong quarter...",
-  "section": "prepared",
-  "speaker_type": "executive",
-  "position": 12
-}
-```
-
----
-
-### 🔹 QA Pair Format
-
-```json
-{
-  "analyst": "Amit Daryanani",
-  "question": "How should we think about margins?",
-  "executives": ["Tim Cook"],
-  "answer": "We expect margins to improve..."
-}
-```
-
----
-
-## ⚙️ Key Components
-
-### 1. Scraper
-
-* Extracts transcript and participant names from Motley Fool
-
----
-
-### 2. Transcript Structuring
-
-* Converts raw text → structured speaker blocks
-* Handles multi-line speech aggregation
-
----
-
-### 3. Section Labeling
-
-* Detects transition into Q&A using:
-
-  * Phrase patterns (e.g., “let’s open for questions”)
-  * Speaker changes
-* Handles **no-QA transcripts**
-
----
-
-### 4. Speaker Classification
-
-* Uses participant list to classify:
-
-  * `executive`
-  * `analyst`
-  * `operator`
-
----
-
-### 5. QA Pairing
-
-* Groups:
-
-  * Analyst → Question
-  * Executive(s) → Answer
-* Merges multi-speaker responses
-
----
-
-### 6. Sentiment Analysis (Planned)
-
-* Uses **FinBERT** for financial sentiment
-* Separate analysis for:
-
-  * Prepared remarks
-  * Executive responses
-
----
-
-### 7. RAG System (Planned)
-
-* Embedding + vector search
-* Enables queries like:
-
-  * “What concerns did analysts raise about revenue?”
-  * “What did Apple say about supply chain?”
-
----
-
-## 🛠️ Installation
-
-```bash
-git clone https://github.com/your-username/earnings-call-sentiment.git
+git clone https://github.com/rohithvishwa31/earnings-call-sentiment.git
 cd earnings-call-sentiment
-
 pip install -r requirements.txt
 ```
-
 ---
 
-## ▶️ Usage
+## Run the app
 
 ```bash
-python main.py
+python -m streamlit run pipeline/ui/app.py
 ```
 
 ---
 
-## 📌 Example Workflow
+## Input Format (Batch Mode)
 
-```python
-url = "Motley Fool earnings call URL"
-
-transcript = fetch_transcript(url)
-exec_names = fetch_exec_names(url)
-
-structured = structure_transcript(transcript)
-labeled = label_transcript_sections(structured, exec_names)
-qa_pairs = build_qa_pairs(labeled)
+```JSON
+[
+  {
+    "question": "What drove growth this quarter?",
+    "answer": "We saw strong demand across segments..."
+  }
+]
 ```
 
 ---
 
-## ⚠️ Current Limitations
+## Sample Output 
 
-* Speaker classification may mislabel moderators as analysts
-* Edge cases in transcripts (format inconsistencies)
-* QA pairing assumes standard call structure
-
----
-
-## 🔮 Future Improvements
-
-* Improve speaker classification using ML/NLP
-* Better handling of edge cases (no-QA, mixed speakers)
-* Fine-tuned financial sentiment models
-* Full RAG pipeline with vector database
-* Dashboard for visualization
-
----
-
-## 🧠 Tech Stack
-
-* Python
-* Regex / Text Processing
-* FinBERT (HuggingFace)
-* Vector DB (FAISS / Pinecone - planned)
+```JSON
+{
+  "label": "positive",
+  "score": 0.38,
+  "drivers": ["growth", "strong demand"],
+  "evidence": [
+    "we saw strong demand across segments",
+    "growth will continue",
+    "record revenue this quarter"
+  ]
+}
+```
 
 ---
 
-## 💡 Key Insight
-
-Earnings calls are not just text — they are **structured financial dialogues**:
-
-* Prepared remarks → company narrative
-* Q&A → analyst pressure & real insights
-
-This project leverages that structure for **deeper financial analysis**.
-
-
-
-* Motley Fool for transcript data
-* FinBERT for financial sentiment modeling
+## Key Contributions
+- Designed a sentiment-aware RAG pipeline for explainability
+- Implemented polarity-aligned evidence ranking
+- Built an interactive analytics dashboard
+- Improved neutral sentiment handling and calibration
 
 ---
+
+## Limitations
+- Sentiment model may misclassify edge cases
+- Evidence retrieval depends on chunking quality
+- Not optimized for real-time large-scale deployment
+
+--- 
+
+## Future Improvements
+- Hybrid retrieval (BM25 + embeddings)
+- LLM-based summarization of insights
+- Improved financial signal extraction
+- Deployment as an API
+
+## Motivation
+
+Traditional sentiment models act as black boxes.
+This project focuses on making financial NLP explainable and actionable by combining modeling with retrieval.
+
+## Author
+
+**Rohith Vishwa Saravanan**
+Software Developer | ML Enthusiast
